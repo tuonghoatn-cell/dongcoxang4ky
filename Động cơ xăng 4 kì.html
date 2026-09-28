@@ -1,0 +1,2353 @@
+<!DOCTYPE html>
+<html lang="vi"><head><script data-bard-client-injected="true">(function(firebaseConfig, initialAuthToken, appId) {
+        window.__firebase_config = firebaseConfig;
+        window.__initial_auth_token = initialAuthToken;
+        window.__app_id = appId;
+            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjExNjRiNzdiNDMzZDdhMDAyMWI4NjE4YjhjYTU3ZTMyZGI5MWUxMTMiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6Ly9pZGVudGl0eXRvb2xraXQuZ29vZ2xlYXBpcy5jb20vZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIwODIxMzk5Mzc1OTIzODIzOTYzMiIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGFpbXMiOnsiYXBwSWQiOiJjXzUyZTc0ODYwZTg3YzQ1MmNfZG9uZ19jb194YW5nXzRfa2kuaHRtbC04OTYifSwiZXhwIjoxNzg5ODMxNjYyLCJpYXQiOjE3ODk4MjgwNjIsImFsZyI6IlJTMjU2In0.jFSGeYpwZ3rzZKXjd2ZsdJXHs-KpOVQWTQL9xBq6NS8jDYMviOjbWRDn3LBgqLOEZtRvoILH5DDi2h24C-d6hekwgNVXwTjpf8Egae_FKmZkZT5Ah9RbzqlRX70NPOEUk1KWQF4FIAVHHkZ9VoBQJVoFXvgENPa3trgjkPZStMQHI3DAkDjO89Rm1K94QESYhGBfi1NVOdZGc7dT0MLV5PGNl66vofgU-7i12yJggcHfhYi9KpytgwSI_G3PgbgDBbPI_FE1R3Cm2ts7KYcl0ieauH_vjStuDoJKJLkpDgBxjwyWLrB0VI0Ad8kthcwU55XjvXojS1akjXLSXQIkRQ","c_52e74860e87c452c_dong_co_xang_4_ki.html-896")</script><script data-bard-client-injected="true">
+  document.addEventListener('input', (event) => {
+    if (event.target && (event.target.isContentEditable || event.target.hasAttribute('contenteditable'))) {
+      const clonedDoc = document.cloneNode(true);
+      const injectedScripts = clonedDoc.querySelectorAll('[data-bard-client-injected="true"]');
+      injectedScripts.forEach(el => el.remove());
+      window.parent.postMessage({
+        type: 'inlineEdit',
+        html: '<!DOCTYPE html>\n' + clonedDoc.documentElement.outerHTML
+      }, '*');
+    }
+  });
+</script><script data-bard-client-injected="true">(function(){'use strict';window.addEventListener("message",a=>{a.data&&a.data.type==="SUPPLEMENTAL_DATA_UPDATE"&&window.dispatchEvent(new CustomEvent("supplementaldataupdate",{detail:a.data.data}))});}).call(this);
+</script><script data-bard-client-injected="true">(function() {
+  const SCROLL_KEYS = new Set([
+    'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+    ' ', 'Spacebar', 'PageUp', 'PageDown', 'Home', 'End',
+  ]);
+  const HORIZONTAL_KEYS = new Set(['ArrowLeft', 'ArrowRight']);
+
+  function isTextEntryTarget(target) {
+    if (!target) return false;
+    const tagName = target.tagName;
+    return tagName === 'INPUT' || tagName === 'TEXTAREA' ||
+        tagName === 'SELECT' || target.isContentEditable === true;
+  }
+
+  // An element absorbs the key only if it both overflows on the axis being
+  // scrolled and is configured to scroll on that axis. The cheap dimension
+  // test runs first because getComputedStyle forces a style recalc, and this
+  // runs on every keypress. Each axis is read from its own longhand: the
+  // 'overflow' shorthand serializes as two values when the axes differ, which
+  // is the common 'overflow-x: hidden; overflow-y: auto' pane.
+  function canScroll(node, horizontal) {
+    const overflows = horizontal ? node.scrollWidth > node.clientWidth
+                                 : node.scrollHeight > node.clientHeight;
+    if (!overflows) return false;
+    const style = window.getComputedStyle(node);
+    const overflow = horizontal ? style.overflowX : style.overflowY;
+    return overflow === 'auto' || overflow === 'scroll';
+  }
+
+  // Walks up from the event target so nested scrollers keep their behavior.
+  // <body> is included because pages that pin the root height make it the
+  // scroll container.
+  function hasScrollableAncestor(target, horizontal) {
+    let node = target;
+    while (node && node !== document.documentElement) {
+      if (canScroll(node, horizontal)) return true;
+      node = node.parentElement;
+    }
+    return false;
+  }
+
+  function rootCanScroll(horizontal) {
+    const scroller = document.scrollingElement || document.documentElement;
+    if (!scroller) return false;
+    // Tolerate a pixel of rounding so subpixel layouts do not look scrollable.
+    return horizontal ? scroller.scrollWidth > window.innerWidth + 1
+                      : scroller.scrollHeight > window.innerHeight + 1;
+  }
+
+  window.addEventListener('keydown', function(event) {
+    if (!SCROLL_KEYS.has(event.key)) return;
+    if (event.defaultPrevented) return;
+    // Alt and Meta turn arrows into browser history navigation, and Ctrl is
+    // reserved for shortcuts, so none of them are scroll intent.
+    if (event.altKey || event.metaKey || event.ctrlKey) return;
+
+    const target = event.target;
+    if (isTextEntryTarget(target)) return;
+
+    // Anything that can still absorb the scroll gets to keep it.
+    const horizontal = HORIZONTAL_KEYS.has(event.key);
+    if (rootCanScroll(horizontal)) return;
+    if (hasScrollableAncestor(target, horizontal)) return;
+
+    event.preventDefault();
+  }, {capture: true, passive: false});
+})();</script><script data-bard-client-injected="true">(function() {
+  // Ensure this script is executed only once
+  if (window.firebaseAuthBridgeScriptLoaded) {
+    return;
+  }
+  window.firebaseAuthBridgeScriptLoaded = true;
+
+  let nextTokenPromiseId = 0;
+
+  // Stores { resolve, reject } for ongoing token requests
+  const pendingTokenPromises = {};
+
+  // Listen for messages from the Host Application
+  window.addEventListener('message', function(event) {
+
+    const messageData = event.data;
+
+  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
+      const { success, token, error, promiseId } = messageData ?? {};
+      if (pendingTokenPromises[promiseId]) {
+        if (success) {
+          pendingTokenPromises[promiseId].resolve(token);
+        } else {
+          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
+        }
+        delete pendingTokenPromises[promiseId];
+      }
+    }
+  });
+
+  // Expose a function for the Generated App to request a new Firebase token
+  window.requestNewFirebaseToken = function() {
+    const currentPromiseId = nextTokenPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingTokenPromises[currentPromiseId] = { resolve, reject };
+    });
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'REQUEST_NEW_FIREBASE_TOKEN',
+        promiseId: currentPromiseId
+      }, '*');
+    } else {
+      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
+      delete pendingTokenPromises[currentPromiseId];
+    }
+    return promise;
+  };
+})();</script><script data-bard-client-injected="true">
+let realOriginalGetUserMedia = null;
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+}
+
+(function() {
+  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
+    try {
+      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
+        get: function() {
+          return undefined; // Or throw an error
+        },
+        configurable: false
+      });
+    } catch (error) {
+      console.error("Error defining prototype getter:", error);
+    }
+  }
+})();
+
+(function() {
+  const pendingMediaResolvers = {};
+  let nextMediaPromiseId = 0;
+
+  function requestMediaPermissions(constraints) {
+    const mediaPromiseId = nextMediaPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingMediaResolvers[mediaPromiseId] = (granted) => {
+        delete pendingMediaResolvers[mediaPromiseId];
+        resolve(granted);
+      };
+    });
+
+    window.parent.postMessage({
+      type: 'requestMediaPermission',
+      constraints: constraints,
+      promiseId: mediaPromiseId,
+    }, '*');
+
+    return promise;
+  }
+
+  let originalGetUserMedia = realOriginalGetUserMedia;
+
+  function interceptGetUserMedia() {
+    if (navigator.mediaDevices) {
+      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
+        value: function(constraints) {
+          return requestMediaPermissions(constraints).then((granted) => {
+            if (granted) {
+              if (originalGetUserMedia) {
+                return originalGetUserMedia(constraints);
+              } else {
+                throw new Error("Original getUserMedia not available.");
+              }
+            } else {
+              throw new DOMException('Permission denied', 'NotAllowedError');
+            }
+          });
+        },
+        writable: false,
+        configurable: false
+      });
+    }
+  }
+
+  interceptGetUserMedia();
+
+  const observer = new MutationObserver(function(mutationsList, observer) {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'childList' && mutation.addedNodes) {
+        mutation.addedNodes.forEach(node => {
+          if (node === navigator.mediaDevices) {
+            interceptGetUserMedia();
+          }
+        });
+      }
+    }
+  });
+
+  function interceptSpeechRecognition() {
+    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+      return;
+    }
+
+    const OriginalSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const SpeechRecognitionWrapper = function(...args) {
+      const recognizer = new OriginalSpeechRecognition(...args);
+      const originalStart = recognizer.start.bind(recognizer);
+
+      recognizer.start = function() {
+        requestMediaPermissions({ audio: true }).then(granted => {
+          if (granted) {
+            originalStart();
+          } else {
+            const errorEvent = new SpeechRecognitionErrorEvent('error');
+            errorEvent.error = 'not-allowed'; // This is the standard error for permission denial.
+            recognizer.dispatchEvent(errorEvent);
+          }
+        });
+      };
+
+      return recognizer;
+    };
+
+    SpeechRecognitionWrapper.prototype = OriginalSpeechRecognition.prototype;
+    SpeechRecognitionWrapper.prototype.constructor = SpeechRecognitionWrapper;
+
+    if (window.SpeechRecognition) {
+      window.SpeechRecognition = SpeechRecognitionWrapper;
+    }
+    if (window.webkitSpeechRecognition) {
+      window.webkitSpeechRecognition = SpeechRecognitionWrapper;
+    }
+  }
+
+  interceptSpeechRecognition();
+
+  window.addEventListener('message', function(event) {
+    if (event.data) {
+      if (event.data.type === 'resolveMediaPermission') {
+        const { promiseId, granted } = event.data;
+        if (pendingMediaResolvers[promiseId]) {
+          pendingMediaResolvers[promiseId](granted);
+        }
+      }
+    }
+  });
+
+})();</script><script ws-interception-config="{&quot;parentOrigin&quot;:&quot;https://gemini.google.com&quot;,&quot;proxiedDomains&quot;:[]}" data-bard-client-injected="true">(function(){'use strict';var u=typeof Object.defineProperties=="function"?Object.defineProperty:function(b,d,e){if(b==Array.prototype||b==Object.prototype)return b;b[d]=e.value;return b};function v(b){b=["object"==typeof globalThis&&globalThis,b,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var d=0;d<b.length;++d){var e=b[d];if(e&&e.Math==Math)return e}throw Error("Cannot find global object");}var w=v(this);
+function y(b,d){if(d)a:{var e=w;b=b.split(".");for(var h=0;h<b.length-1;h++){var k=b[h];if(!(k in e))break a;e=e[k]}b=b[b.length-1];h=e[b];d=d(h);d!=h&&d!=null&&u(e,b,{configurable:!0,writable:!0,value:d})}}function z(b){function d(h){return b.next(h)}function e(h){return b.throw(h)}return new Promise(function(h,k){function m(n){n.done?h(n.value):Promise.resolve(n.value).then(d,e).then(m,k)}m(b.next())})}y("globalThis",function(b){return b||w});/*
+
+ Copyright The Closure Library Authors.
+ SPDX-License-Identifier: Apache-2.0
+*/
+function A(b,d){function e(){}e.prototype=d.prototype;b.j=d.prototype;b.prototype=new e;b.prototype.constructor=b;b.h=function(h,k,m){for(var n=Array(arguments.length-2),p=2;p<arguments.length;p++)n[p-2]=arguments[p];return d.prototype[k].apply(h,n)}};function B(b,d,e="*"){function h(a){if(typeof a==="string")return F.encode(a).buffer;if(a instanceof ArrayBuffer)return a.slice(0);if(ArrayBuffer.isView(a))return a.buffer.slice(a.byteOffset,a.byteOffset+a.byteLength);throw Error("Invalid data type");}function k(a){a=h(a);var f={type:"send",data:new Uint8Array(a)},g;(g=r)==null||g.postMessage(f,[a])}function m(){if(!r)throw Error("Data port not captured yet.");r.onmessage=a=>{if(a.data.type==="message"){a=new MessageEvent("message",{data:G.decode(a.data.data)});
+let f;(f=c.onmessage)==null||f.call(c,a);c.dispatchEvent(a)}}}function n(){if(!t)throw Error("Control port not captured yet.");t.onmessage=a=>{switch(a.data.type){case "open":l=1;var f=new Event("open"),g;(g=c.onopen)==null||g.call(c,f);c.dispatchEvent(f);q.forEach(H=>{k(H)});q=[];break;case "close":g=a.data;l=3;g=new CloseEvent("close",{code:g.code,reason:g.reason,wasClean:g.wasClean});(f=c.onclose)==null||f.call(c,g);c.dispatchEvent(g);break;case "error":l=3;f=new Event("error");let x;(x=c.onerror)==
+null||x.call(c,f);c.dispatchEvent(f)}}}function p(a){return z(function*(){var f=new MessageChannel;t=f.port1;var g=new MessageChannel;r=g.port1;n();m();window.parent.postMessage({type:"websocket_open",portOrdering:["control","data"],url:b,protocols:a||[],connectionId:I},e,[f.port2,g.port2])}())}var c=Reflect.construct(EventTarget,[],new.target);c.CONNECTING=0;c.OPEN=1;c.CLOSING=2;c.CLOSED=3;c.url=b;c.binaryType="arraybuffer";c.protocol="";c.i="";var l=0,t=null,r=null,q=[],F=new TextEncoder,G=new TextDecoder;
+c.onopen=null;c.onmessage=null;c.onclose=null;c.onerror=null;Object.defineProperty(c,"readyState",{get:()=>l,enumerable:!0,configurable:!0});Object.defineProperty(c,"bufferedAmount",{get:()=>{var a=0;q.forEach(f=>{a+=typeof f==="string"?f.length:f.byteLength});return a},enumerable:!0,configurable:!0});var I=function(){var a;return((a=globalThis.crypto)==null?0:a.randomUUID)?globalThis.crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,f=>{var g=Math.random()*16|0;return(f===
+"x"?g:g&3|8).toString(16)})}();c.send=a=>{if(l===1)a instanceof Blob?a.arrayBuffer().then(f=>{k(f)}):k(a);else if(l===0)if(typeof a==="string")q.push(a);else if(a instanceof ArrayBuffer||ArrayBuffer.isView(a))q.push(h(a));else throw Error("Sending Blob is not supported before the connection is open.");else console.debug("WebSocket send called in CLOSING or CLOSED state; ignored.")};c.close=(a=1E3,f="")=>{if(l!==2&&l!==3){l=2;a={type:"close",code:a,reason:f,wasClean:a===1E3};var g;(g=t)==null||g.postMessage(a)}};
+Promise.resolve().then(()=>p(d));return c}A(B,EventTarget);var C=document.currentScript,D=C==null?void 0:C.getAttribute("ws-interception-config");if(!D)throw Error("WebSocket Interceptor: Missing ws-interception-config attribute in the script tag.");var E=JSON.parse(D);if(!E.parentOrigin||typeof E.parentOrigin!=="string")throw Error("WebSocket Interceptor: Invalid parentOrigin in ws-interception-config");
+(function(b){var d=Object.getOwnPropertyDescriptor(window,"WebSocket");if(!d||d.writable||d.configurable)d=Object.assign(function(e,h){try{let k=(new URL(e)).hostname;if(b.proxiedDomains.some(m=>k===m||k.endsWith(`.${m}`)))return new B(e,h,b.parentOrigin)}catch(k){throw window.parent.postMessage({type:"websocket_blocked",url:e,reason:"blocked_invalid_url"},b.parentOrigin),new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");}window.parent.postMessage({type:"websocket_blocked",
+url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");},{CONNECTING:0,OPEN:1,CLOSING:2,CLOSED:3}),Object.defineProperty(window,"WebSocket",{value:d,writable:!1,configurable:!1})})({proxiedDomains:E.proxiedDomains||[],parentOrigin:E.parentOrigin});}).call(this);
+</script><script data-bard-client-injected="true">((function(modelInformation) {
+  const originalFetch = window.fetch;
+  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
+  let googleLlmBaseApiUrls = [
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageEditModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageTransformModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.ttsModelName + ':generateContent',
+  ];
+  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+    );
+  });
+  modelInformation.deprecatedImageModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predict',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predictLongRunning',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+  modelInformation.deprecatedGenerateImageModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+  modelInformation.deprecatedImageTransformModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+
+  const pendingFetchResolvers = {};
+  let nextPromiseId = 0;
+
+  function handleStringInput(input, optionsArgument) {
+    const actualUrl = input;
+    const fetchCallArgs = [actualUrl, optionsArgument];
+    const effectiveOptions = optionsArgument || {};
+    const bodyForApiKeyCheck = effectiveOptions.body;
+    const bodyForPostMessage = effectiveOptions.body;
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  function handleRequestInput(input, optionsArgument) {
+    const actualUrl = input.url;
+    const fetchCallArgs = [input, optionsArgument];
+    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (optionsArgument) {
+      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
+      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
+      if ('body' in optionsArgument) {
+        bodyForApiKeyCheck = optionsArgument.body;
+        bodyForPostMessage = optionsArgument.body;
+      } else {
+        bodyForApiKeyCheck = undefined;
+        bodyForPostMessage = input.body;
+      }
+    } else {
+      bodyForApiKeyCheck = undefined;
+      bodyForPostMessage = input.body;
+    }
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  window.fetch = function(input, optionsArgument) {
+    let actualUrl;
+    let fetchCallArgs;
+    let effectiveOptions = {};
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (typeof input === 'string') {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
+    } else if (input instanceof Request) {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
+    } else {
+      return originalFetch.apply(window, [input, optionsArgument]);
+    }
+
+    effectiveOptions.method = effectiveOptions.method || 'GET';
+    if (!effectiveOptions.headers) {
+      effectiveOptions.headers = new Headers();
+    }
+
+
+    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
+      let apiKeyIsNull = true;
+
+      const regex = new RegExp("models/([^:]+)");
+      const modelNameMatch = actualUrl.match(regex);
+      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
+
+
+      try {
+        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
+        const apiKeyParam = urlObject.searchParams.get('key');
+        if (apiKeyParam) {
+          apiKeyIsNull = false;
+        }
+      } catch (e) {
+        // Continue checks even if URL parsing fails
+      }
+
+      if (apiKeyIsNull && effectiveOptions.headers) {
+        const h = new Headers(effectiveOptions.headers);
+        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
+        if (apiKeyHeaderValue) {
+          apiKeyIsNull = false;
+          return originalFetch.apply(window, fetchCallArgs);
+        }
+      }
+
+      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
+        try {
+          const bodyData = JSON.parse(bodyForApiKeyCheck);
+          if (bodyData && bodyData.apiKey) {
+            apiKeyIsNull = false;
+            return originalFetch.apply(window, fetchCallArgs);
+          }
+        } catch (e) {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      if(apiKeyIsNull) {
+        const promiseId = nextPromiseId++;
+        const promise = new Promise((resolve) => {
+          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
+            delete pendingFetchResolvers[promiseId];
+            resolve(resolvedResponse);
+          };
+        });
+
+        let serializedBodyForPostMessage;
+        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
+            serializedBodyForPostMessage = bodyForPostMessage;
+        } else if (bodyForPostMessage instanceof ReadableStream) {
+            serializedBodyForPostMessage = null;
+        } else {
+            try {
+                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
+            } catch (e) {
+                serializedBodyForPostMessage = null;
+            }
+        }
+
+        const messageOptions = {
+            method: effectiveOptions.method,
+            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
+            body: serializedBodyForPostMessage
+        };
+
+        window.parent.postMessage({
+          type: 'requestFetch',
+          url: actualUrl,
+          modelName: modelName,
+          options: messageOptions,
+          promiseId: promiseId,
+        }, '*');
+
+        return promise;
+      }
+      return originalFetch.apply(window, fetchCallArgs);
+    }
+    return originalFetch.apply(window, fetchCallArgs);
+  };
+
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'resolveFetch') {
+      const { promiseId, response } = event.data;
+      if (pendingFetchResolvers[promiseId]) {
+        try {
+          const reconstructedResponse = new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: new Headers(response.headers),
+          });
+          pendingFetchResolvers[promiseId](reconstructedResponse);
+        } catch (error) {
+          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
+        }
+      }
+    }
+  });
+
+}))({"textModelName":"gemini-3-flash-preview","imageModelName":"imagen-4.0-generate-001","imageEditModelName":"gemini-3.1-flash-image","imageTransformModelName":"gemini-3-pro-image","videoModelName":"veo-2.0-generate-001","ttsModelName":"gemini-2.5-flash-preview-tts","deprecatedTextModelNames":["gemini-2.0-flash","gemini-2.5-flash","gemini-2.5-flash-preview-04-17","gemini-2.5-flash-preview-05-20","gemini-2.5-flash-preview-09-2025"],"deprecatedImageModelNames":["imagen-3.0-generate-001","imagen-3.0-generate-002"],"deprecatedGenerateImageModelNames":["gemini-2.5-flash-image-preview","gemini-2.5-flash-image","gemini-3.1-flash-image-preview"],"deprecatedImageTransformModelNames":["gemini-3-pro-image-preview-11-2025"]})</script><script data-bard-client-injected="true">(function(){'use strict';function a(){window.parent.postMessage({type:"interaction"},"*")}window.addEventListener("click",a,{capture:!0,passive:!0});window.addEventListener("touchstart",a,{capture:!0,passive:!0});window.addEventListener("keydown",a,{capture:!0,passive:!0});}).call(this);
+</script><script data-bard-client-injected="true">(function() {
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+
+    /**
+   * Normalizes an error event or a promise rejection reason into a structured error object.
+   * @param {*} errorEventOrReason The error object or reason.
+   * @return {object} Structured error data { message, name, stack }.
+   */
+  function getErrorObject(errorEventOrReason) {
+    if (errorEventOrReason instanceof Error) {
+      return {
+        message: errorEventOrReason.message,
+        name: errorEventOrReason.name,
+        stack: errorEventOrReason.stack,
+      };
+    }
+    // Fallback for non-Error objects.
+    try {
+      return {
+        message: JSON.stringify(errorEventOrReason),
+        name: 'UnknownErrorType',
+        stack: null,
+      };
+    } catch (e) {
+      return {
+        message: String(errorEventOrReason),
+        name: 'UnknownErrorTypeNonStringifiable',
+        stack: null,
+      };
+    }
+  }
+
+  /**
+   * Converts an array of arguments (from log/error) into a single string.
+   * Handles Error objects specially to include their message and stack.
+   * @param {Array<*>} args - Arguments passed to console methods.
+   * @return {string} A string representation of the arguments.
+   */
+  function stringifyArgs(args) {
+    return args
+      .map((arg) => {
+        if (arg instanceof Error) {
+          const {message, stack} = arg;
+          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
+        }
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            return JSON.stringify(arg);
+          } catch (error) {
+            return '[Circular Object]';
+          }
+        } else {
+          return String(arg);
+        }
+      })
+      .join(' ');
+  }
+
+  console.log = function(...args) {
+    const logString = stringifyArgs(args);
+    window.parent.postMessage({ type: 'log', message: logString }, '*');
+    originalConsoleLog.apply(console, args);
+  };
+
+  console.error = function(...args) {
+    let errorData;
+    if (args.length > 0 && args[0] instanceof Error) {
+      const err = args[0];
+      // If the first arg is an Error, capture its details.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        ...getErrorObject(err),
+        rawArgsString: stringifyArgs(args.slice(1)),
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      // If not an Error object, treat all args as a general error message.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        message: stringifyArgs(args),
+        name: 'ConsoleLoggedError',
+        stack: null,
+        timestamp: new Date().toISOString(),
+      };
+    }
+    window.parent.postMessage(errorData, '*');
+    originalConsoleError.apply(console, args);
+  };
+
+  // Listen for global unhandled synchronous errors.
+  window.addEventListener('error', function(event) {
+    const errorDetails = event.error ? getErrorObject(event.error) : {
+      message: event.message,
+      name: 'GlobalError',
+      stack: null,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+    };
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'global',
+      ...errorDetails,
+      message: errorDetails.message || event.message,
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+  // Listen for unhandled promise rejections (asynchronous errors).
+  window.addEventListener('unhandledrejection', function(event) {
+    const errorDetails = getErrorObject(event.reason);
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'unhandledrejection',
+      ...errorDetails,
+      message: errorDetails.message || 'Unhandled Promise Rejection',
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+})();</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nguyên Lí Làm Việc Của Động Cơ Xăng 4 Kì - GV Tường Thị Hoa</title>
+  <!-- CSS Reset và Toàn bộ Styling thuần tự lập trình (Hoàn toàn Offline 100%, không cần thư viện CDN bên ngoài) -->
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+      background-color: #050a14;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Keyframes hiệu ứng nhấp nháy & Fade-in */
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.25; filter: drop-shadow(0 0 2px currentColor); }
+      50% { opacity: 1; filter: drop-shadow(0 0 12px currentColor); }
+    }
+
+    @keyframes fadeInEffect {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeInEffect 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Thanh cuộn tinh tế */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #070e1c; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
+
+    /* Header */
+    .app-header {
+      background: linear-gradient(135deg, #070d1a 0%, #0f1c33 50%, #070d1a 100%);
+      border-bottom: 4px solid #f59e0b;
+      padding: 12px 18px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      position: relative;
+      z-index: 30;
+    }
+
+    .header-content {
+      max-width: 1750px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .header-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #38bdf8;
+      background: rgba(14, 165, 233, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 9999px;
+      margin-bottom: 3px;
+    }
+
+    .main-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #ffffff;
+      line-height: 1.25;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Tiêu đề phụ: Font size chuẩn đúng 1/2 tiêu đề chính, in nghiêng, màu sắc trang nhã */
+    .sub-title {
+      font-size: 0.625rem; /* Đúng 1/2 so với 1.25rem */
+      font-style: italic;
+      font-weight: 500;
+      color: #cbd5e1;
+      margin-top: 2px;
+      letter-spacing: 0.04em;
+    }
+
+    @media (min-width: 768px) {
+      .main-title { font-size: 1.45rem; }
+      .sub-title { font-size: 0.725rem; } /* Đúng 1/2 của 1.45rem */
+    }
+
+    /* Nút bấm trên Header */
+    .btn-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      border: 1px solid transparent;
+    }
+
+    .btn-download {
+      background: rgba(6, 78, 59, 0.85);
+      color: #6ee7b7;
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+    .btn-download:hover {
+      background: #059669;
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-lock {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fcd34d;
+      border-color: rgba(245, 158, 11, 0.5);
+    }
+    .btn-lock:hover {
+      background: #f59e0b;
+      color: #070d1a;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+    }
+    .btn-lock.unlocked {
+      background: #10b981;
+      color: #ffffff;
+      border-color: #34d399;
+    }
+
+    /* Thanh chọn 4 Tab */
+    .tab-bar {
+      background: #091222;
+      border-bottom: 1px solid #1e293b;
+      padding: 8px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    .tab-container {
+      max-width: 1750px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .tab-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tab-item {
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      background: #0d1a30;
+      color: #94a3b8;
+      border: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s;
+    }
+    .tab-item:hover {
+      background: #152646;
+      color: #e2e8f0;
+    }
+    .tab-item.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #38bdf8;
+      box-shadow: 0 0 12px rgba(2, 132, 199, 0.5);
+    }
+    .tab-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #64748b;
+    }
+    .tab-item.active .tab-dot {
+      background: #ffffff;
+      box-shadow: 0 0 6px #ffffff;
+    }
+
+    /* Layout Split-Screen chính */
+    .split-main {
+      flex: 1;
+      max-width: 1750px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (min-width: 1024px) {
+      .split-main {
+        grid-template-columns: 5fr 7fr; /* Cột trái 5 phần, cột phải 7 phần */
+      }
+    }
+
+    /* Panel Card */
+    .panel-box {
+      background: #091222;
+      border: 2px solid #1a2844;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .panel-header {
+      padding: 10px 14px;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    /* Khung Canvas */
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      background: radial-gradient(circle at center 40%, #0d1b33 0%, #050b14 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #mainCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: pointer;
+    }
+
+    /* 10 Nút bấm định vị bộ phận */
+    .parts-toolbar {
+      padding: 10px 12px;
+      background: #060c18;
+      border-top: 1px solid #1a2844;
+    }
+    .parts-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      margin-top: 6px;
+    }
+    .part-btn {
+      padding: 5px 2px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 6px;
+      background: #111d33;
+      color: #94a3b8;
+      border: 1px solid #1e2e4a;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .part-btn:hover {
+      background: #1c2e50;
+      color: #ffffff;
+    }
+    .part-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #38bdf8;
+      font-weight: 800;
+      box-shadow: 0 0 8px rgba(2, 132, 199, 0.6);
+    }
+
+    /* Cột bên phải: Phiếu câu hỏi */
+    .question-list {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .question-card {
+      background: #060c18;
+      border: 1px solid #1a2942;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .q-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .q-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #0369a1;
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .ans-slot {
+      min-height: 42px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #020610;
+      border: 1px dashed #334155;
+      font-size: 12px;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      line-height: 1.45;
+    }
+    .ans-slot:hover {
+      border-color: #38bdf8;
+      color: #e2e8f0;
+      background: #081224;
+    }
+    .ans-slot.revealed {
+      border: 1px solid #10b981;
+      background: rgba(6, 78, 59, 0.25);
+      color: #f8fafc;
+      cursor: default;
+    }
+    .ans-slot.locked-click {
+      border-color: #f59e0b;
+      animation: pulseGlow 0.6s 2 ease-in-out;
+    }
+
+    /* Huy hiệu MỞ/ĐÓNG */
+    .badge-open {
+      padding: 2px 7px;
+      background: #064e3b;
+      color: #6ee7b7;
+      border: 1px solid #10b981;
+      border-radius: 6px;
+      font-weight: 900;
+      font-size: 11px;
+      display: inline-block;
+    }
+    .badge-close {
+      padding: 2px 7px;
+      background: #4c0519;
+      color: #fda4af;
+      border: 1px solid #f43f5e;
+      border-radius: 6px;
+      font-weight: 900;
+      font-size: 11px;
+      display: inline-block;
+    }
+
+    /* Bảng Tổng Kết 4 Kì */
+    .summary-section {
+      margin-top: 14px;
+      padding: 14px;
+      background: #060c18;
+      border-radius: 14px;
+      border: 1px solid #1e293b;
+    }
+    .table-scroll {
+      overflow-x: auto;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1px solid #1a2844;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #162238;
+      vertical-align: middle;
+    }
+    th {
+      background: #0d1930;
+      color: #e2e8f0;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    td .cell-btn {
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: #030814;
+      border: 1px dashed #334155;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 11px;
+      display: block;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    td .cell-btn:hover {
+      border-color: #38bdf8;
+      color: #ffffff;
+    }
+    td .cell-btn.revealed {
+      border: 1px solid #10b981;
+      background: rgba(6, 78, 59, 0.25);
+      color: #f1f5f9;
+      cursor: default;
+    }
+
+    /* Modal Mật Khẩu */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 18, 0.85);
+      backdrop-filter: blur(5px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal-box {
+      background: #091326;
+      border: 2px solid #f59e0b;
+      border-radius: 18px;
+      padding: 24px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    }
+    .modal-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #020712;
+      border: 1px solid #334155;
+      color: #ffffff;
+      font-size: 14px;
+      margin: 12px 0 6px 0;
+      outline: none;
+    }
+    .modal-input:focus { border-color: #f59e0b; }
+    .error-msg {
+      color: #f43f5e;
+      font-size: 11.5px;
+      font-weight: 700;
+      display: none;
+      margin-bottom: 12px;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 12px;
+      font-size: 11px;
+      color: #64748b;
+      border-top: 1px solid #111d33;
+      background: #030710;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= HEADER CHÍNH ================= -->
+  <header class="app-header">
+    <div class="header-content">
+      
+      <!-- Nút Tải Offline Trực Tiếp -->
+      <div>
+        <button onclick="downloadHtmlFile()" class="btn-header btn-download" title="Lưu trang web về máy tính hoặc điện thoại">
+          <svg style="width:15px;height:15px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          <span>Tải file HTML (Dạy Offline)</span>
+        </button>
+      </div>
+
+      <!-- Tiêu đề chuẩn quy cách -->
+      <div style="text-align:center; flex: 1;">
+        <span class="header-badge">Môn Công nghệ 11 • Bài 18: Động cơ đốt trong</span>
+        <h1 class="main-title">NGUYÊN LÍ LÀM VIỆC CỦA ĐỘNG CƠ XĂNG 4 KÌ (Hình 18.3 SGK Công nghệ 11)</h1>
+        <!-- Tiêu đề phụ: Font size bằng đúng 1/2 tiêu đề chính, in nghiêng, trang nhã -->
+        <h2 class="sub-title">GV thiết kế: Tường Thị Hoa - Trường THPT Trại Cau</h2>
+      </div>
+
+      <!-- Nút Khóa / Mở Khóa Mật Mã 123 của Giáo Viên -->
+      <div>
+        <button id="masterLockBtn" onclick="toggleLockModal()" class="btn-header btn-lock">
+          <span id="lockStateIcon">🔒</span>
+          <span id="lockStateText">Khóa Đáp Án (GV)</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= THANH CHỌN 4 KÌ NHANH CHÓNG ================= -->
+  <nav class="tab-bar">
+    <div class="tab-container">
+      <div class="tab-buttons">
+        <button onclick="switchStroke(0)" id="tab-0" class="tab-item active">
+          <span class="tab-dot"></span>
+          <span>Hình a</span>
+          <span id="tab-text-0" style="font-size:11px;opacity:0.85;">(❓ Kì ???)</span>
+        </button>
+
+        <button onclick="switchStroke(1)" id="tab-1" class="tab-item">
+          <span class="tab-dot"></span>
+          <span>Hình b</span>
+          <span id="tab-text-1" style="font-size:11px;opacity:0.85;">(❓ Kì ???)</span>
+        </button>
+
+        <button onclick="switchStroke(2)" id="tab-2" class="tab-item">
+          <span class="tab-dot"></span>
+          <span>Hình c</span>
+          <span id="tab-text-2" style="font-size:11px;opacity:0.85;">(❓ Kì ???)</span>
+        </button>
+
+        <button onclick="switchStroke(3)" id="tab-3" class="tab-item">
+          <span class="tab-dot"></span>
+          <span>Hình d</span>
+          <span id="tab-text-3" style="font-size:11px;opacity:0.85;">(❓ Kì ???)</span>
+        </button>
+      </div>
+
+      <!-- Điều khiển chuyển động và Tốc độ -->
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button id="animToggleBtn" onclick="togglePlayState()" style="padding:6px 12px; background:#111d33; color:#38bdf8; border:1px solid #1e2e4a; border-radius:8px; font-size:11.5px; font-weight:800; cursor:pointer;">
+          <span id="animIcon">⏸️</span> <span id="animText">Tạm dừng</span>
+        </button>
+        <div style="display:none; align-items:center; gap:6px; font-size:11px; color:#94a3b8; background:#070d18; padding:4px 10px; border-radius:8px; border:1px solid #152238;" id="speedBox">
+          <span>Tốc độ:</span>
+          <input type="range" min="0.4" max="2.0" step="0.2" value="1.0" oninput="setSpeed(this.value)" style="width:70px; accent-color:#38bdf8; cursor:pointer;">
+          <span id="speedDisplay" style="color:#38bdf8; font-weight:bold; width:26px;">1.0x</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ================= BỐ CỤC MÀN HÌNH KÉP (SPLIT-SCREEN) ================= -->
+  <main class="split-main">
+    
+    <!-- ================= CỘT TRÁI: MÔ PHỎNG CANVAS ĐỘNG CƠ CỐ ĐỊNH ================= -->
+    <div class="panel-box">
+      <div class="panel-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span id="currentFigureBadge" style="padding:3px 8px; background:#082f49; border:1px solid #0284c7; color:#38bdf8; font-size:11px; font-weight:900; border-radius:6px;">HÌNH a (SGK 18.3)</span>
+          <span id="currentStrokeTitle" style="font-size:12px; font-weight:800; color:#f59e0b;">❓ Kì ??? (Chưa mở khóa tên kì)</span>
+        </div>
+        <span id="cycleStatusBadge" style="font-size:11px; font-weight:800; color:#10b981; display:flex; align-items:center; gap:5px;">
+          <span style="width:7px; height:7px; border-radius:50%; background:#10b981;"></span> Đang hoạt động
+        </span>
+      </div>
+
+      <!-- Canvas Mô Phỏng Cơ Cấu Động Học -->
+      <div class="canvas-container">
+        <canvas id="mainCanvas" width="460" height="400" onclick="togglePlayState()" title="Chạm/Click để Tạm dừng hoặc Chạy tiếp"></canvas>
+        <div style="position:absolute; bottom:8px; right:10px; font-size:10px; color:#64748b; background:rgba(6,12,24,0.85); padding:2px 6px; border-radius:4px; pointer-events:none; border:1px solid #1e293b;">
+          Chạm vào hình để Dừng / Tiếp tục
+        </div>
+      </div>
+
+      <!-- 10 Nút Chú Thích Bộ Phận Cấu Tạo -->
+      <div class="parts-toolbar">
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase;">
+          <span style="display:flex; align-items:center; gap:4px;"><span style="color:#f59e0b;">📍</span> 10 Bộ phận cấu tạo:</span>
+          <button onclick="toggleAllParts()" style="background:none; border:none; color:#38bdf8; font-size:11px; cursor:pointer; text-decoration:underline;">Hiện/Ẩn tất cả</button>
+        </div>
+        <div class="parts-grid">
+          <button onclick="togglePart('intakePipe')" id="part-btn-intakePipe" class="part-btn">Đường ống nạp</button>
+          <button onclick="togglePart('exhaustPipe')" id="part-btn-exhaustPipe" class="part-btn">Đường ống thải</button>
+          <button onclick="togglePart('intakeValve')" id="part-btn-intakeValve" class="part-btn">Xupap nạp</button>
+          <button onclick="togglePart('exhaustValve')" id="part-btn-exhaustValve" class="part-btn">Xupap thải</button>
+          <button onclick="togglePart('spark')" id="part-btn-spark" class="part-btn">Bugi</button>
+          <button onclick="togglePart('cylinder')" id="part-btn-cylinder" class="part-btn">Xilanh</button>
+          <button onclick="togglePart('piston')" id="part-btn-piston" class="part-btn">Pittong</button>
+          <button onclick="togglePart('rod')" id="part-btn-rod" class="part-btn">Thanh truyền</button>
+          <button onclick="togglePart('crank')" id="part-btn-crank" class="part-btn">Trục khuỷu</button>
+          <button onclick="togglePart('crankcase')" id="part-btn-crankcase" class="part-btn">Cac-te</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= CỘT PHẢI: PHIẾU CÂU HỎI VÀ BẢNG ĐỐI CHIẾU ================= -->
+    <div class="panel-box">
+      <div class="panel-header">
+        <div>
+          <span style="font-size:13px; font-weight:900; color:#f59e0b; text-transform:uppercase; letter-spacing:0.04em;">
+            📝 Phiếu Khám Phá &amp; Đối Chiếu Kiến Thức
+          </span>
+          <span id="rightFigureTag" style="padding:2px 6px; background:#082f49; color:#38bdf8; font-size:11px; font-weight:800; border-radius:4px; margin-left:6px;">HÌNH a</span>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button onclick="attemptRevealAllQuestions()" style="padding:5px 10px; background:#0284c7; color:#ffffff; border:none; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">
+            Mở 4 câu
+          </button>
+          <button onclick="hideCurrentQuestions()" style="padding:5px 10px; background:#111d33; color:#94a3b8; border:1px solid #1e293b; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;">
+            Ẩn đáp án
+          </button>
+        </div>
+      </div>
+
+      <!-- Danh sách 4 Câu hỏi trọng tâm của kì đang quan sát -->
+      <div class="question-list">
+        
+        <!-- Câu 1 -->
+        <div class="question-card">
+          <div class="q-title">
+            <span class="q-num">1</span>
+            <span>Chiều chuyển động của pít-tông &amp; Mũi tên bên trái:</span>
+          </div>
+          <div id="ans-box-1" onclick="handleAnswerClick(1)" class="ans-slot">🔒 [Bị khóa] Hãy quan sát mô phỏng bên trái để trả lời ra vở.</div>
+        </div>
+
+        <!-- Câu 2 -->
+        <div class="question-card">
+          <div class="q-title">
+            <span class="q-num">2</span>
+            <span>Trạng thái đóng/mở của các xupáp (Nạp &amp; Thải):</span>
+          </div>
+          <div id="ans-box-2" onclick="handleAnswerClick(2)" class="ans-slot">🔒 [Bị khóa] Hãy quan sát mô phỏng bên trái để trả lời ra vở.</div>
+        </div>
+
+        <!-- Câu 3 -->
+        <div class="question-card">
+          <div class="q-title">
+            <span class="q-num">3</span>
+            <span>Dòng khí, màu sắc hỗn hợp khí trong xilanh:</span>
+          </div>
+          <div id="ans-box-3" onclick="handleAnswerClick(3)" class="ans-slot">🔒 [Bị khóa] Hãy quan sát mô phỏng bên trái để trả lời ra vở.</div>
+        </div>
+
+        <!-- Câu 4 -->
+        <div class="question-card">
+          <div class="q-title">
+            <span class="q-num">4</span>
+            <span>Hoạt động của Bugi và Góc quay trục khuỷu:</span>
+          </div>
+          <div id="ans-box-4" onclick="handleAnswerClick(4)" class="ans-slot">🔒 [Bị khóa] Hãy quan sát mô phỏng bên trái để trả lời ra vở.</div>
+        </div>
+
+        <!-- BẢNG TỔNG KẾT 4 KÌ (ĐỐI CHIẾU TOÀN DIỆN) -->
+        <div class="summary-section">
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+            <div style="font-size:12px; font-weight:800; color:#f59e0b; display:flex; align-items:center; gap:5px;">
+              <span>📊</span> BẢNG TỔNG HỢP KIẾN THỨC 4 KÌ (SGK 18.3)
+            </div>
+            <div style="display:flex; gap:5px;">
+              <button onclick="attemptRevealAllTable()" style="padding:4px 8px; background:#0369a1; color:#ffffff; border:none; border-radius:5px; font-size:10.5px; font-weight:800; cursor:pointer;">
+                Mở toàn bảng
+              </button>
+              <button onclick="hideAllTable()" style="padding:4px 8px; background:#111d33; color:#94a3b8; border:1px solid #1e293b; border-radius:5px; font-size:10.5px; font-weight:700; cursor:pointer;">
+                Ẩn bảng
+              </button>
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Hình</th>
+                  <th>Tên Kì</th>
+                  <th>Pít-tông</th>
+                  <th>Xupap nạp</th>
+                  <th>Xupap thải</th>
+                  <th>Màu khí xilanh</th>
+                  <th>Bugi &amp; Góc quay</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight:900; color:#38bdf8;">Hình a</td>
+                  <td><div id="tb-0-name" onclick="handleTableClick('tb-0-name')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-0-pis" onclick="handleTableClick('tb-0-pis')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-0-inv" onclick="handleTableClick('tb-0-inv')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-0-exv" onclick="handleTableClick('tb-0-exv')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-0-col" onclick="handleTableClick('tb-0-col')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-0-bg" onclick="handleTableClick('tb-0-bg')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:900; color:#818cf8;">Hình b</td>
+                  <td><div id="tb-1-name" onclick="handleTableClick('tb-1-name')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-1-pis" onclick="handleTableClick('tb-1-pis')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-1-inv" onclick="handleTableClick('tb-1-inv')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-1-exv" onclick="handleTableClick('tb-1-exv')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-1-col" onclick="handleTableClick('tb-1-col')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-1-bg" onclick="handleTableClick('tb-1-bg')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:900; color:#f43f5e;">Hình c</td>
+                  <td><div id="tb-2-name" onclick="handleTableClick('tb-2-name')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-2-pis" onclick="handleTableClick('tb-2-pis')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-2-inv" onclick="handleTableClick('tb-2-inv')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-2-exv" onclick="handleTableClick('tb-2-exv')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-2-col" onclick="handleTableClick('tb-2-col')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-2-bg" onclick="handleTableClick('tb-2-bg')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:900; color:#f97316;">Hình d</td>
+                  <td><div id="tb-3-name" onclick="handleTableClick('tb-3-name')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-3-pis" onclick="handleTableClick('tb-3-pis')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-3-inv" onclick="handleTableClick('tb-3-inv')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-3-exv" onclick="handleTableClick('tb-3-exv')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-3-col" onclick="handleTableClick('tb-3-col')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                  <td><div id="tb-3-bg" onclick="handleTableClick('tb-3-bg')" class="cell-btn">🔒 [Bị khóa]</div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= HỘP THOẠI MẬT KHẨU GIÁO VIÊN (MẬT MÃ 123) ================= -->
+  <div id="passwordModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div style="display:flex; align-items:center; gap:8px; color:#f59e0b; margin-bottom:8px;">
+        <span style="font-size:22px;">🔐</span>
+        <h3 style="font-size:15px; font-weight:900; text-transform:uppercase;">Xác thực quyền Giáo viên</h3>
+      </div>
+      <p style="font-size:12px; color:#cbd5e1; line-height:1.5;">
+        Khu vực đáp án và tên các kì dành riêng cho Giáo viên chốt kiến thức. Học sinh vui lòng quan sát mô phỏng để làm bài. Vui lòng nhập mật mã mở khóa:
+      </p>
+      
+      <input type="password" id="passwordInputField" class="modal-input" placeholder="Nhập mật khẩu (123)..." onkeydown="if(event.key==='Enter') verifyTeacherPassword()">
+      
+      <div id="pwdErrorNotice" class="error-msg">
+        ⚠️ Sai mật mã! Các em hãy tiếp tục quan sát mô phỏng và ghi kết quả vào vở.
+      </div>
+
+      <div class="modal-actions">
+        <button onclick="closePasswordModal()" style="padding:7px 14px; background:#111d33; color:#94a3b8; border:1px solid #1e293b; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">
+          Hủy bỏ
+        </button>
+        <button onclick="verifyTeacherPassword()" style="padding:7px 18px; background:#f59e0b; color:#060d1a; border:none; border-radius:8px; font-size:12px; font-weight:900; cursor:pointer;">
+          Mở khóa
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    Trường THPT Trại Cau • Tổ Khoa học Tự nhiên &amp; Công nghệ • Thiết kế bài giảng trực quan môn Công nghệ 11
+  </footer>
+
+  <!-- ================= JAVASCRIPT LOGIC & CANVAS 60FPS ================= -->
+  <script>
+    /* MẬT KHẨU BẢO MẬT BẮT BUỘC LÀ 123 */
+    const TEACHER_PASSWORD = "123";
+    let isSystemUnlocked = false; // Mặc định luôn bị KHÓA CỨNG
+    let isAnimationPaused = false;
+    let currentStrokeIdx = 0; // 0: Nạp, 1: Nén, 2: Nổ, 3: Thải
+    let globalFrameCounter = 0;
+    let engineSpeed = 1.0;
+
+    // Dữ liệu sư phạm chuẩn SGK Hình 18.3
+    const LESSON_DATA = [
+      {
+        figName: "HÌNH a",
+        formalCycle: "Kì 1: Kì Nạp (Hút hòa khí)",
+        isDown: true,
+        intakeOpen: true,
+        exhaustOpen: false,
+        sparkActive: false,
+        startRad: 0,
+        endRad: Math.PI,
+        colorDesc: "Xanh dương",
+        answers: {
+          1: `<strong style="color:#38bdf8;">PÍT-TÔNG ĐI XUỐNG</strong> (từ ĐCT xuống ĐCD). Mũi tên bên trái <strong style="color:#38bdf8;">hướng xuống nhấp nháy</strong>. Thể tích xilanh tăng, áp suất giảm tạo độ chênh áp suất để hút hòa khí.`,
+          2: `Xupap nạp: <span class="badge-open">MỞ</span> (hạ xuống). Xupap thải: <span class="badge-close">ĐÓNG</span>.`,
+          3: `Mũi tên nhấp nháy <strong style="color:#0284c7;">XANH LAM ĐẬM</strong> trên ống nạp hút hòa khí (xăng + không khí) có <strong style="color:#38bdf8;">MÀU XANH DƯƠNG</strong> đi vào xilanh.`,
+          4: `Bugi <span style="color:#94a3b8;">không đánh lửa</span>. Trục khuỷu quay 1/2 vòng đầu tiên (từ 0° đến 180°).`
+        }
+      },
+      {
+        figName: "HÌNH b",
+        formalCycle: "Kì 2: Kì Nén (Nén hòa khí)",
+        isDown: false,
+        intakeOpen: false,
+        exhaustOpen: false,
+        sparkActive: false,
+        startRad: Math.PI,
+        endRad: Math.PI * 2,
+        colorDesc: "Xanh tím đậm",
+        answers: {
+          1: `<strong style="color:#10b981;">PÍT-TÔNG ĐI LÊN</strong> (từ ĐCD lên ĐCT). Mũi tên bên trái <strong style="color:#10b981;">hướng lên nhấp nháy</strong> dồn nén hòa khí lại.`,
+          2: `Cả hai xupáp đều <span class="badge-close">ĐÓNG KÍN</span> (Xupap nạp ĐÓNG, xupap thải ĐÓNG).`,
+          3: `Thể tích xilanh giảm tối đa, áp suất và nhiệt độ tăng vọt. Hòa khí bị nén chuyển sang <strong style="color:#818cf8;">MÀU XANH TÍM ĐẬM</strong>.`,
+          4: `Bugi chuẩn bị đánh lửa ở cuối kì. Trục khuỷu quay tiếp 1/2 vòng thứ hai (từ 180° đến 360°).`
+        }
+      },
+      {
+        figName: "HÌNH c",
+        formalCycle: "Kì 3: Kì Nổ (Cháy - Dãn nở sinh công)",
+        isDown: true,
+        intakeOpen: false,
+        exhaustOpen: false,
+        sparkActive: true,
+        startRad: Math.PI * 2,
+        endRad: Math.PI * 3,
+        colorDesc: "Đỏ rực",
+        answers: {
+          1: `Khí cháy áp suất cực cao <strong style="color:#f43f5e;">ĐẨY MẠNH PÍT-TÔNG ĐI XUỐNG</strong> (từ ĐCT xuống ĐCD). Mũi tên bên trái <strong style="color:#f43f5e;">hướng xuống nhấp nháy đỏ</strong>.`,
+          2: `Cả hai xupáp tiếp tục <span class="badge-close">ĐÓNG KÍN</span> để giữ áp suất sinh công.`,
+          3: `Bugi <strong style="color:#f59e0b;">PHÓNG TIA LỬA ĐIỆN ⚡</strong> châm cháy hòa khí. Khí cháy bùng nổ <strong style="color:#f43f5e;">MÀU ĐỎ RỰC</strong> dãn nở sinh công đẩy pít-tông.`,
+          4: `Đây là <strong style="color:#f59e0b;">KÌ DUY NHẤT SINH CÔNG</strong> trong cả chu trình 4 kì. Trục khuỷu quay từ 360° đến 540°.`
+        }
+      },
+      {
+        figName: "HÌNH d",
+        formalCycle: "Kì 4: Kì Thải (Xả khí đã cháy)",
+        isDown: false,
+        intakeOpen: false,
+        exhaustOpen: true,
+        sparkActive: false,
+        startRad: Math.PI * 3,
+        endRad: Math.PI * 4,
+        colorDesc: "Xám tro",
+        answers: {
+          1: `<strong style="color:#10b981;">PÍT-TÔNG ĐI LÊN</strong> (từ ĐCD lên ĐCT). Mũi tên bên trái <strong style="color:#10b981;">hướng lên nhấp nháy</strong> quét sạch khí đã cháy ra ngoài.`,
+          2: `Xupap nạp: <span class="badge-close">ĐÓNG</span>. Xupap thải: <span class="badge-open">MỞ</span> (hạ xuống).`,
+          3: `Mũi tên nhấp nháy <strong style="color:#dc2626;">ĐỎ ĐẬM</strong> trên ống thải đẩy khí thải có <strong style="color:#94a3b8;">MÀU XÁM TRO</strong> ra ống xả.`,
+          4: `Bugi <span style="color:#94a3b8;">không đánh lửa</span>. Trục khuỷu quay nốt 1/2 vòng cuối (540° đến 720° - hoàn tất 2 vòng quay của chu trình).`
+        }
+      }
+    ];
+
+    let currentTheta = LESSON_DATA[0].startRad + 0.6;
+    const selectedParts = new Set();
+    const ALL_PARTS_LIST = ['intakePipe', 'exhaustPipe', 'intakeValve', 'exhaustValve', 'spark', 'cylinder', 'piston', 'rod', 'crank', 'crankcase'];
+
+    // Kích thước cơ cấu trục khuỷu thanh truyền pít-tông
+    const engineSpecs = {
+      cx: 260,
+      cy: 300,
+      crankR: 48,
+      rodL: 122,
+      pistonW: 116,
+      pistonH: 54,
+      cylW: 122,
+      cylTopY: 65,
+      cylH: 180
+    };
+
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // ================= CHUYỂN TAB KÌ =================
+    function switchStroke(idx) {
+      currentStrokeIdx = idx;
+      currentTheta = LESSON_DATA[idx].startRad + 0.5;
+
+      for (let i = 0; i < 4; i++) {
+        const tab = document.getElementById(`tab-${i}`);
+        if (i === idx) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      }
+      refreshUI();
+    }
+
+    function refreshUI() {
+      const data = LESSON_DATA[currentStrokeIdx];
+      document.getElementById('currentFigureBadge').innerText = `${data.figName} (SGK 18.3)`;
+      document.getElementById('rightFigureTag').innerText = data.figName;
+
+      const strokeTitle = document.getElementById('currentStrokeTitle');
+      if (isSystemUnlocked) {
+        strokeTitle.innerText = data.formalCycle;
+        strokeTitle.style.color = "#38bdf8";
+      } else {
+        strokeTitle.innerText = "❓ Kì ??? (Chưa mở khóa tên kì)";
+        strokeTitle.style.color = "#f59e0b";
+      }
+
+      // Đặt lại câu hỏi về trạng thái ẩn
+      hideCurrentQuestions();
+    }
+
+    // ================= XỬ LÝ KHÓA BẢO MẬT CHẶT CHẼ =================
+    function toggleLockModal() {
+      if (isSystemUnlocked) {
+        // Nếu đang mở mà bấm thì khóa lại (Chế độ Học sinh)
+        isSystemUnlocked = false;
+        applyLockStatusUI();
+      } else {
+        // Mở popup nhập mật khẩu
+        openPasswordModal();
+      }
+    }
+
+    function openPasswordModal() {
+      const modal = document.getElementById('passwordModal');
+      const input = document.getElementById('passwordInputField');
+      const errorMsg = document.getElementById('pwdErrorNotice');
+      modal.classList.add('show');
+      input.value = '';
+      errorMsg.style.display = 'none';
+      setTimeout(() => input.focus(), 100);
+    }
+
+    function closePasswordModal() {
+      document.getElementById('passwordModal').classList.remove('show');
+    }
+
+    function verifyTeacherPassword() {
+      const input = document.getElementById('passwordInputField');
+      const val = input.value.trim();
+
+      if (val === TEACHER_PASSWORD) {
+        isSystemUnlocked = true;
+        closePasswordModal();
+        applyLockStatusUI();
+      } else {
+        const errorMsg = document.getElementById('pwdErrorNotice');
+        errorMsg.style.display = 'block';
+        input.select();
+      }
+    }
+
+    function applyLockStatusUI() {
+      const lockBtn = document.getElementById('masterLockBtn');
+      const lockIcon = document.getElementById('lockStateIcon');
+      const lockText = document.getElementById('lockStateText');
+
+      if (isSystemUnlocked) {
+        lockBtn.className = "btn-header btn-lock unlocked";
+        lockIcon.innerText = "🔓";
+        lockText.innerText = "Khóa Lại (Học Sinh)";
+
+        // Hiện tên các tab
+        document.getElementById('tab-text-0').innerText = "(Kì Nạp)";
+        document.getElementById('tab-text-1').innerText = "(Kì Nén)";
+        document.getElementById('tab-text-2').innerText = "(Kì Nổ)";
+        document.getElementById('tab-text-3').innerText = "(Kì Thải)";
+      } else {
+        lockBtn.className = "btn-header btn-lock";
+        lockIcon.innerText = "🔒";
+        lockText.innerText = "Khóa Đáp Án (GV)";
+
+        // Giấu tên các tab
+        document.getElementById('tab-text-0').innerText = "(❓ Kì ???)";
+        document.getElementById('tab-text-1').innerText = "(❓ Kì ???)";
+        document.getElementById('tab-text-2').innerText = "(❓ Kì ???)";
+        document.getElementById('tab-text-3').innerText = "(❓ Kì ???)";
+      }
+
+      refreshUI();
+      hideAllTable();
+    }
+
+    // CHẶN BẤT KỲ CÚ CLICK NÀO VÀO Ô ĐÁP ÁN NẾU CHƯA MỞ KHÓA MẬT MÃ 123
+    function handleAnswerClick(qNum) {
+      if (!isSystemUnlocked) {
+        // CHẶN LẬP TỨC: Bật popup đòi mật khẩu giáo viên
+        const slot = document.getElementById(`ans-box-${qNum}`);
+        slot.classList.add('locked-click');
+        setTimeout(() => slot.classList.remove('locked-click'), 600);
+        openPasswordModal();
+        return;
+      }
+      revealAnswerSlot(qNum);
+    }
+
+    function revealAnswerSlot(qNum) {
+      const slot = document.getElementById(`ans-box-${qNum}`);
+      const content = LESSON_DATA[currentStrokeIdx].answers[qNum];
+      slot.classList.add('revealed', 'fade-in');
+      slot.innerHTML = content;
+    }
+
+    function attemptRevealAllQuestions() {
+      if (!isSystemUnlocked) {
+        openPasswordModal();
+        return;
+      }
+      for (let i = 1; i <= 4; i++) revealAnswerSlot(i);
+    }
+
+    function hideCurrentQuestions() {
+      for (let i = 1; i <= 4; i++) {
+        const slot = document.getElementById(`ans-box-${i}`);
+        slot.classList.remove('revealed', 'fade-in');
+        if (isSystemUnlocked) {
+          slot.innerHTML = `👉 [GV đã mở khóa] Nhấp để xem đáp án câu ${i}`;
+        } else {
+          slot.innerHTML = `🔒 [Bị khóa] Hãy quan sát mô phỏng bên trái để trả lời ra vở.`;
+        }
+      }
+    }
+
+    // CHẶN CÁC Ô TRONG BẢNG TỔNG KẾT
+    function handleTableClick(cellId) {
+      if (!isSystemUnlocked) {
+        openPasswordModal();
+        return;
+      }
+      const cell = document.getElementById(cellId);
+      const ans = fullTableData[cellId];
+      if (ans) {
+        cell.classList.add('revealed', 'fade-in');
+        cell.innerHTML = ans;
+      }
+    }
+
+    function attemptRevealAllTable() {
+      if (!isSystemUnlocked) {
+        openPasswordModal();
+        return;
+      }
+      for (const id in fullTableData) {
+        const cell = document.getElementById(id);
+        cell.classList.add('revealed', 'fade-in');
+        cell.innerHTML = fullTableData[id];
+      }
+    }
+
+    function hideAllTable() {
+      for (const id in fullTableData) {
+        const cell = document.getElementById(id);
+        cell.classList.remove('revealed', 'fade-in');
+        cell.innerHTML = isSystemUnlocked ? `[...? Bấm xem]` : `🔒 [Bị khóa]`;
+      }
+    }
+
+    const fullTableData = {
+      'tb-0-name': '<strong>Kì Nạp</strong>',
+      'tb-0-pis': '<span style="color:#38bdf8; font-weight:bold;">ĐCT &rarr; ĐCD (&darr; Xuống)</span>',
+      'tb-0-inv': '<span class="badge-open">MỞ</span>',
+      'tb-0-exv': '<span class="badge-close">ĐÓNG</span>',
+      'tb-0-col': '<span style="color:#38bdf8; font-weight:bold;">Xanh dương</span>',
+      'tb-0-bg': 'Không đánh lửa (0°-180°)',
+
+      'tb-1-name': '<strong>Kì Nén</strong>',
+      'tb-1-pis': '<span style="color:#10b981; font-weight:bold;">ĐCD &rarr; ĐCT (&uarr; Lên)</span>',
+      'tb-1-inv': '<span class="badge-close">ĐÓNG</span>',
+      'tb-1-exv': '<span class="badge-close">ĐÓNG</span>',
+      'tb-1-col': '<span style="color:#818cf8; font-weight:bold;">Xanh tím đậm</span>',
+      'tb-1-bg': 'Chuẩn bị đánh lửa (180°-360°)',
+
+      'tb-2-name': '<strong style="color:#f43f5e;">Kì Nổ</strong>',
+      'tb-2-pis': '<span style="color:#f43f5e; font-weight:bold;">ĐCT &rarr; ĐCD (&darr; Xuống mạnh)</span>',
+      'tb-2-inv': '<span class="badge-close">ĐÓNG</span>',
+      'tb-2-exv': '<span class="badge-close">ĐÓNG</span>',
+      'tb-2-col': '<span style="color:#f43f5e; font-weight:bold;">Đỏ rực bùng nổ</span>',
+      'tb-2-bg': '<strong style="color:#f59e0b;">Tia lửa ⚡ (SINH CÔNG)</strong> (360°-540°)',
+
+      'tb-3-name': '<strong>Kì Thải</strong>',
+      'tb-3-pis': '<span style="color:#10b981; font-weight:bold;">ĐCD &rarr; ĐCT (&uarr; Lên)</span>',
+      'tb-3-inv': '<span class="badge-close">ĐÓNG</span>',
+      'tb-3-exv': '<span class="badge-open">MỞ</span>',
+      'tb-3-col': '<span style="color:#94a3b8; font-weight:bold;">Xám tro</span>',
+      'tb-3-bg': 'Hết chu trình (540°-720°)'
+    };
+
+    // Tạm dừng / Tiếp tục animation
+    function togglePlayState() {
+      isAnimationPaused = !isAnimationPaused;
+      const icon = document.getElementById('animIcon');
+      const text = document.getElementById('animText');
+      const badge = document.getElementById('cycleStatusBadge');
+
+      if (isAnimationPaused) {
+        icon.innerText = "▶️";
+        text.innerText = "Tiếp tục";
+        badge.innerHTML = `<span style="width:7px; height:7px; border-radius:50%; background:#f59e0b;"></span> <span style="color:#f59e0b;">Tạm dừng</span>`;
+      } else {
+        icon.innerText = "⏸️";
+        text.innerText = "Tạm dừng";
+        badge.innerHTML = `<span style="width:7px; height:7px; border-radius:50%; background:#10b981;"></span> <span style="color:#10b981;">Đang hoạt động</span>`;
+      }
+    }
+
+    function setSpeed(val) {
+      engineSpeed = parseFloat(val);
+      document.getElementById('speedDisplay').innerText = `${engineSpeed.toFixed(1)}x`;
+    }
+
+    // 10 Nút bộ phận cấu tạo
+    function togglePart(key) {
+      const btn = document.getElementById(`part-btn-${key}`);
+      if (selectedParts.has(key)) {
+        selectedParts.delete(key);
+        btn.classList.remove('active');
+      } else {
+        selectedParts.add(key);
+        btn.classList.add('active');
+      }
+    }
+
+    function toggleAllParts() {
+      const willAdd = selectedParts.size < ALL_PARTS_LIST.length;
+      ALL_PARTS_LIST.forEach(k => {
+        const btn = document.getElementById(`part-btn-${k}`);
+        if (willAdd) {
+          selectedParts.add(k);
+          btn.classList.add('active');
+        } else {
+          selectedParts.delete(k);
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    // Tải file HTML Offline trọn vẹn
+    function downloadHtmlFile() {
+      const fullDoc = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([fullDoc], { type: "text/html;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "BaiGiang_DongCoXang4Ki_GiaoVien_TuongThiHoa.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    // ================= VẼ MÔ PHỎNG ĐỘNG HỌC CANVAS 60FPS =================
+    function getKinematics(theta) {
+      const pinX = engineSpecs.cx + engineSpecs.crankR * Math.sin(theta);
+      const pinY = engineSpecs.cy - engineSpecs.crankR * Math.cos(theta);
+      const dx = pinX - engineSpecs.cx;
+      const pistonPinY = pinY - Math.sqrt(Math.max(0, engineSpecs.rodL * engineSpecs.rodL - dx * dx));
+      const pistonPinX = engineSpecs.cx;
+      const pistonTopY = pistonPinY - (engineSpecs.pistonH / 2);
+      return { pinX, pinY, pistonPinX, pistonPinY, pistonTopY };
+    }
+
+    function drawEngineSimulation() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const kin = getKinematics(currentTheta);
+      const currentData = LESSON_DATA[currentStrokeIdx];
+      // Hiệu ứng nhấp nháy liên tục cho mũi tên chuyển động
+      const blinkAlpha = isAnimationPaused ? 0.8 : (0.35 + 0.65 * Math.abs(Math.sin(globalFrameCounter * 0.14)));
+
+      // 1. Cột thước đo bên trái có vạch ĐCT/ĐCD & Mũi tên nhấp nháy chỉ hướng
+      drawPistonGaugeLeft(currentData.isDown, currentStrokeIdx, blinkAlpha);
+
+      // 2. Thân động cơ (Xilanh, đường nạp, đường thải, cac-te)
+      drawEngineStructure();
+
+      // 3. Mũi tên nhấp nháy trên ống nạp (xanh lam đậm) và ống thải (đỏ đậm)
+      drawIntakeExhaustFlowArrows(currentStrokeIdx, blinkAlpha);
+
+      // 4. Màu sắc hỗn hợp hòa khí và buồng cháy trong xilanh
+      drawMixtureColorInCylinder(currentStrokeIdx, kin.pistonTopY);
+
+      // 5. Hệ thống 2 Xupáp
+      drawValveMechanisms(currentStrokeIdx);
+
+      // 6. Bugi đánh lửa
+      drawSparkPlug(currentStrokeIdx);
+
+      // 7. Pít-tông & Mũi tên nhỏ trên thân
+      drawPistonAssembly(kin, currentData.isDown, currentStrokeIdx);
+
+      // 8. Thanh truyền
+      drawConnectingRod(kin);
+
+      // 9. Trục khuỷu & chốt quay
+      drawCrankshaft(kin);
+
+      // 10. Vạch chuẩn ĐCT và ĐCD
+      drawDeadCenterMarks();
+
+      // 11. Đường gióng và nhãn tên cho 10 bộ phận cấu tạo
+      drawPartCalloutLines(kin);
+    }
+
+    /* 1. CỘT THƯỚC ĐO BÊN TRÁI VỚI VẠCH ĐCT/ĐCD & MŨI TÊN NHẤP NHÁY */
+    function drawPistonGaugeLeft(isDown, strokeIdx, blinkAlpha) {
+      ctx.save();
+      const colX = 38;
+      const topY = 80;
+      const botY = 225;
+      const arrowColor = isDown ? (strokeIdx === 2 ? "#f43f5e" : "#38bdf8") : "#10b981";
+
+      // Vạch & Chữ ĐCT, ĐCD
+      ctx.fillStyle = "#cbd5e1";
+      ctx.font = "bold 10px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("ĐCT", colX, topY - 8);
+      ctx.fillText("ĐCD", colX, botY + 18);
+
+      ctx.strokeStyle = "rgba(255,255,255,0.2)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(colX - 16, topY); ctx.lineTo(colX + 16, topY);
+      ctx.moveTo(colX - 16, botY); ctx.lineTo(colX + 16, botY);
+      ctx.stroke();
+
+      // Thân mũi tên nhấp nháy (blinking)
+      ctx.globalAlpha = blinkAlpha;
+      ctx.lineWidth = 8;
+      ctx.strokeStyle = arrowColor;
+      ctx.fillStyle = arrowColor;
+      ctx.lineCap = "round";
+
+      if (!isAnimationPaused) {
+        ctx.shadowColor = arrowColor;
+        ctx.shadowBlur = 12;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(colX, topY + 8);
+      ctx.lineTo(colX, botY - 8);
+      ctx.stroke();
+
+      // Đầu mũi tên nhọn
+      ctx.beginPath();
+      if (isDown) {
+        const tipY = botY - 5;
+        ctx.moveTo(colX - 12, tipY - 16);
+        ctx.lineTo(colX, tipY);
+        ctx.lineTo(colX + 12, tipY - 16);
+      } else {
+        const tipY = topY + 5;
+        ctx.moveTo(colX - 12, tipY + 16);
+        ctx.lineTo(colX, tipY);
+        ctx.lineTo(colX + 12, tipY + 16);
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.shadowBlur = 0;
+      ctx.font = "bold 9.5px sans-serif";
+      ctx.fillStyle = arrowColor;
+      ctx.fillText(isDown ? "Xuống ↓" : "Lên ↑", colX, botY + 34);
+
+      ctx.restore();
+    }
+
+    /* 2. CẤU TRÚC ĐỘNG CƠ */
+    function drawEngineStructure() {
+      ctx.save();
+      const x1 = engineSpecs.cx - engineSpecs.cylW / 2;
+      const x2 = engineSpecs.cx + engineSpecs.cylW / 2;
+      const topY = engineSpecs.cylTopY;
+
+      // Xilanh
+      const isCylActive = selectedParts.has('cylinder');
+      ctx.fillStyle = isCylActive ? "#243654" : "#162238";
+      ctx.strokeStyle = isCylActive ? "#38bdf8" : "#475569";
+      ctx.lineWidth = 2.5;
+      ctx.fillRect(x1 - 12, topY, 12, engineSpecs.cylH);
+      ctx.strokeRect(x1 - 12, topY, 12, engineSpecs.cylH);
+      ctx.fillRect(x2, topY, 12, engineSpecs.cylH);
+      ctx.strokeRect(x2, topY, 12, engineSpecs.cylH);
+
+      // Đường ống nạp (trái)
+      const isIntakeActive = selectedParts.has('intakePipe');
+      ctx.beginPath();
+      ctx.moveTo(x1 - 48, topY);
+      ctx.lineTo(x1, topY);
+      ctx.lineTo(x1 + 24, topY - 22);
+      ctx.lineTo(x1 - 48, topY - 22);
+      ctx.closePath();
+      ctx.fillStyle = isIntakeActive ? "#1e3a8a" : "#172554";
+      ctx.fill();
+      ctx.strokeStyle = isIntakeActive ? "#38bdf8" : "#475569";
+      ctx.stroke();
+
+      // Đường ống thải (phải)
+      const isExhaustActive = selectedParts.has('exhaustPipe');
+      ctx.beginPath();
+      ctx.moveTo(x2 + 48, topY);
+      ctx.lineTo(x2, topY);
+      ctx.lineTo(x2 - 24, topY - 22);
+      ctx.lineTo(x2 + 48, topY - 22);
+      ctx.closePath();
+      ctx.fillStyle = isExhaustActive ? "#7f1d1d" : "#3b141e";
+      ctx.fill();
+      ctx.strokeStyle = isExhaustActive ? "#f43f5e" : "#475569";
+      ctx.stroke();
+
+      // Cac-te
+      const isCrankcaseActive = selectedParts.has('crankcase');
+      ctx.beginPath();
+      ctx.arc(engineSpecs.cx, engineSpecs.cy, 76, 0, Math.PI * 2);
+      ctx.fillStyle = isCrankcaseActive ? "#15243d" : "#0a101d";
+      ctx.fill();
+      ctx.strokeStyle = isCrankcaseActive ? "#f59e0b" : "#1e2e4a";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    /* 3. MŨI TÊN NHẤP NHÁY TRÊN ĐƯỜNG ỐNG NẠP VÀ THẢI */
+    function drawIntakeExhaustFlowArrows(strokeIdx, blinkAlpha) {
+      ctx.save();
+      const topY = engineSpecs.cylTopY;
+      const x1 = engineSpecs.cx - engineSpecs.cylW / 2;
+      const x2 = engineSpecs.cx + engineSpecs.cylW / 2;
+
+      // Kì Nạp: Mũi tên nhấp nháy XANH LAM ĐẬM hút vào
+      if (strokeIdx === 0) {
+        const inX = x1 - 44;
+        const inY = topY - 11;
+        const offset = isAnimationPaused ? 0 : ((globalFrameCounter * 0.9) % 12);
+        ctx.globalAlpha = blinkAlpha;
+        drawCustomArrow(inX + offset, inY, inX + 26 + offset, inY, "#0284c7", 5, true);
+      }
+
+      // Kì Thải: Mũi tên nhấp nháy ĐỎ ĐẬM đẩy ra ngoài
+      if (strokeIdx === 3) {
+        const exX = x2 + 6;
+        const exY = topY - 11;
+        const offset = isAnimationPaused ? 0 : ((globalFrameCounter * 0.9) % 12);
+        ctx.globalAlpha = blinkAlpha;
+        drawCustomArrow(exX + offset, exY, exX + 28 + offset, exY, "#dc2626", 5, true);
+      }
+      ctx.restore();
+    }
+
+    function drawCustomArrow(fx, fy, tx, ty, color, width, glow) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = width;
+      ctx.lineCap = "round";
+      if (glow && !isAnimationPaused) {
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 10;
+      }
+      ctx.beginPath();
+      ctx.moveTo(fx, fy);
+      ctx.lineTo(tx, ty);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(tx - 8, ty - 6);
+      ctx.lineTo(tx + 3, ty);
+      ctx.lineTo(tx - 8, ty + 6);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    /* 4. MÀU SẮC HỖN HỢP KHÍ TRONG XILANH */
+    function drawMixtureColorInCylinder(strokeIdx, pistonTopY) {
+      ctx.save();
+      const x = engineSpecs.cx - engineSpecs.cylW / 2 + 1;
+      const w = engineSpecs.cylW - 2;
+      const y = engineSpecs.cylTopY;
+      const h = Math.max(6, pistonTopY - y);
+
+      let grad = ctx.createLinearGradient(x, y, x, pistonTopY);
+
+      if (strokeIdx === 0) {
+        // HÒA KHÍ MÀU XANH DƯƠNG
+        grad.addColorStop(0, "rgba(2, 132, 199, 0.95)");
+        grad.addColorStop(0.5, "rgba(56, 189, 248, 0.78)");
+        grad.addColorStop(1, "rgba(14, 165, 233, 0.45)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, y, w, h);
+      } else if (strokeIdx === 1) {
+        // HÒA KHÍ NÉN MÀU XANH TÍM ĐẬM
+        grad.addColorStop(0, "rgba(129, 140, 248, 0.96)");
+        grad.addColorStop(0.6, "rgba(99, 102, 241, 0.9)");
+        grad.addColorStop(1, "rgba(67, 56, 202, 0.88)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, y, w, h);
+      } else if (strokeIdx === 2) {
+        // KHÍ CHÁY BÙNG NỔ MÀU ĐỎ RỰC
+        grad.addColorStop(0, "rgba(254, 240, 138, 0.98)");
+        grad.addColorStop(0.2, "rgba(239, 68, 68, 0.96)");
+        grad.addColorStop(0.65, "rgba(220, 38, 38, 0.92)");
+        grad.addColorStop(1, "rgba(185, 28, 28, 0.9)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, y, w, h);
+
+        if (!isAnimationPaused) {
+          ctx.fillStyle = "#fef08a";
+          for (let i = 0; i < 7; i++) {
+            let fx = x + 8 + Math.random() * (w - 16);
+            let fy = y + 4 + Math.random() * (h - 8);
+            ctx.beginPath();
+            ctx.arc(fx, fy, Math.random() * 2.5 + 1.2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      } else if (strokeIdx === 3) {
+        // KHÍ THẢI MÀU XÁM TRO
+        grad.addColorStop(0, "rgba(148, 163, 184, 0.95)");
+        grad.addColorStop(0.5, "rgba(100, 116, 139, 0.86)");
+        grad.addColorStop(1, "rgba(51, 65, 85, 0.78)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, y, w, h);
+      }
+      ctx.restore();
+    }
+
+    /* 5. HỆ THỐNG 2 XUPÁP */
+    function drawValveMechanisms(strokeIdx) {
+      const data = LESSON_DATA[strokeIdx];
+      const inLift = data.intakeOpen ? 14 : 0;
+      const exLift = data.exhaustOpen ? 14 : 0;
+      const inX = engineSpecs.cx - 28;
+      const exX = engineSpecs.cx + 28;
+      const seatY = engineSpecs.cylTopY;
+
+      drawSingleValve(inX, seatY + inLift, data.intakeOpen, "#38bdf8", selectedParts.has('intakeValve'));
+      drawSingleValve(exX, seatY + exLift, data.exhaustOpen, "#f97316", selectedParts.has('exhaustValve'));
+    }
+
+    function drawSingleValve(x, y, isOpen, activeColor, isPartHighlighted) {
+      ctx.save();
+      ctx.fillStyle = isPartHighlighted ? "#f59e0b" : (isOpen ? activeColor : "#94a3b8");
+      ctx.strokeStyle = "#080d1a";
+      ctx.lineWidth = 1.3;
+
+      ctx.fillRect(x - 3, y - 38, 6, 38);
+      ctx.beginPath();
+      ctx.moveTo(x - 16, y);
+      ctx.lineTo(x + 16, y);
+      ctx.lineTo(x + 9, y - 9);
+      ctx.lineTo(x - 9, y - 9);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      if (isSystemUnlocked) {
+        ctx.font = "bold 8.5px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillStyle = isOpen ? "#34d399" : "#f87171";
+        ctx.fillText(isOpen ? "MỞ" : "ĐÓNG", x, y - 42);
+      }
+      ctx.restore();
+    }
+
+    /* 6. BUGI ĐÁNH LỬA */
+    function drawSparkPlug(strokeIdx) {
+      ctx.save();
+      const x = engineSpecs.cx;
+      const y = engineSpecs.cylTopY;
+      const isSparkActive = selectedParts.has('spark');
+
+      ctx.fillStyle = isSparkActive ? "#f59e0b" : "#cbd5e1";
+      ctx.fillRect(x - 6, y - 30, 12, 30);
+      ctx.fillStyle = "#2563eb";
+      ctx.fillRect(x - 4, y - 24, 8, 14);
+      ctx.fillStyle = "#f59e0b";
+      ctx.fillRect(x - 2, y, 4, 7);
+
+      if (strokeIdx === 2) {
+        ctx.strokeStyle = "#fef08a";
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        ctx.moveTo(x, y + 7);
+        ctx.lineTo(x - 5, y + 12);
+        ctx.lineTo(x + 4, y + 16);
+        ctx.lineTo(x - 3, y + 21);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(x, y + 14, 11, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(254, 240, 138, 0.5)";
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    /* 7. PÍT-TÔNG */
+    function drawPistonAssembly(kin, isDown, strokeIdx) {
+      ctx.save();
+      const px = engineSpecs.cx - engineSpecs.pistonW / 2;
+      const py = kin.pistonTopY;
+      const pw = engineSpecs.pistonW;
+      const ph = engineSpecs.pistonH;
+      const isPistonActive = selectedParts.has('piston');
+
+      let grad = ctx.createLinearGradient(px, py, px + pw, py);
+      if (isPistonActive) {
+        grad.addColorStop(0, "#fbbf24");
+        grad.addColorStop(0.5, "#fef08a");
+        grad.addColorStop(1, "#d97706");
+      } else {
+        grad.addColorStop(0, "#64748b");
+        grad.addColorStop(0.3, "#cbd5e1");
+        grad.addColorStop(0.7, "#f8fafc");
+        grad.addColorStop(1, "#475569");
+      }
+
+      ctx.fillStyle = grad;
+      ctx.strokeStyle = "#080e18";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(px, py, pw, ph, [3, 3, 9, 9]);
+      ctx.fill();
+      ctx.stroke();
+
+      // Xéc-măng
+      ctx.fillStyle = "#1e293b";
+      ctx.fillRect(px + 1, py + 7, pw - 2, 2.5);
+      ctx.fillRect(px + 1, py + 14, pw - 2, 2.5);
+
+      // Chốt pít-tông
+      ctx.beginPath();
+      ctx.arc(kin.pistonPinX, kin.pistonPinY, 9, 0, Math.PI * 2);
+      ctx.fillStyle = "#334155";
+      ctx.fill();
+      ctx.stroke();
+
+      // Mũi tên nhỏ trên thân
+      const arrColor = isDown ? (strokeIdx === 2 ? "#f43f5e" : "#38bdf8") : "#10b981";
+      ctx.strokeStyle = arrColor;
+      ctx.lineWidth = 4;
+      ctx.lineCap = "round";
+
+      const arrX = kin.pistonPinX;
+      const arrY = py + ph / 2;
+      const arrL = 20;
+      const sY = isDown ? arrY - arrL / 2 : arrY + arrL / 2;
+      const eY = isDown ? arrY + arrL / 2 : arrY - arrL / 2;
+
+      ctx.beginPath();
+      ctx.moveTo(arrX, sY);
+      ctx.lineTo(arrX, eY);
+      ctx.stroke();
+
+      ctx.beginPath();
+      if (isDown) {
+        ctx.moveTo(arrX - 7, eY - 7);
+        ctx.lineTo(arrX, eY + 3);
+        ctx.lineTo(arrX + 7, eY - 7);
+      } else {
+        ctx.moveTo(arrX - 7, eY + 7);
+        ctx.lineTo(arrX, eY - 3);
+        ctx.lineTo(arrX + 7, eY + 7);
+      }
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    /* 8. THANH TRUYỀN */
+    function drawConnectingRod(kin) {
+      ctx.save();
+      const isRodActive = selectedParts.has('rod');
+      ctx.strokeStyle = isRodActive ? "#fbbf24" : "#475569";
+      ctx.lineWidth = 12;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(kin.pistonPinX, kin.pistonPinY);
+      ctx.lineTo(kin.pinX, kin.pinY);
+      ctx.stroke();
+
+      ctx.strokeStyle = isRodActive ? "#ffffff" : "#94a3b8";
+      ctx.lineWidth = 4.5;
+      ctx.beginPath();
+      ctx.moveTo(kin.pistonPinX, kin.pistonPinY);
+      ctx.lineTo(kin.pinX, kin.pinY);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(kin.pinX, kin.pinY, 13, 0, Math.PI * 2);
+      ctx.fillStyle = "#cbd5e1";
+      ctx.fill();
+      ctx.strokeStyle = "#0b1220";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    /* 9. TRỤC KHUỶU */
+    function drawCrankshaft(kin) {
+      ctx.save();
+      const isCrankActive = selectedParts.has('crank');
+      ctx.beginPath();
+      ctx.arc(engineSpecs.cx, engineSpecs.cy, 18, 0, Math.PI * 2);
+      ctx.fillStyle = isCrankActive ? "#38bdf8" : "#1e293b";
+      ctx.fill();
+      ctx.strokeStyle = isCrankActive ? "#bae6fd" : "#64748b";
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(engineSpecs.cx, engineSpecs.cy);
+      ctx.lineTo(kin.pinX, kin.pinY);
+      ctx.strokeStyle = isCrankActive ? "#0284c7" : "#334155";
+      ctx.lineWidth = 20;
+      ctx.lineCap = "round";
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(kin.pinX, kin.pinY, 7.5, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff";
+      ctx.fill();
+      ctx.restore();
+    }
+
+    /* 10. VẠCH ĐCT VÀ ĐCD */
+    function drawDeadCenterMarks() {
+      ctx.save();
+      ctx.setLineDash([3, 3]);
+      ctx.font = "bold 8.5px sans-serif";
+
+      const x1 = engineSpecs.cx - engineSpecs.cylW / 2 - 5;
+      const x2 = engineSpecs.cx + engineSpecs.cylW / 2 + 5;
+
+      const yTDC = (engineSpecs.cy - engineSpecs.crankR) - engineSpecs.rodL - (engineSpecs.pistonH / 2);
+      ctx.strokeStyle = "#f43f5e";
+      ctx.fillStyle = "#f43f5e";
+      ctx.beginPath();
+      ctx.moveTo(x1, yTDC); ctx.lineTo(x2, yTDC);
+      ctx.stroke();
+      ctx.fillText("ĐCT", x2 + 4, yTDC + 3);
+
+      const yBDC = (engineSpecs.cy + engineSpecs.crankR) - engineSpecs.rodL - (engineSpecs.pistonH / 2);
+      ctx.strokeStyle = "#38bdf8";
+      ctx.fillStyle = "#38bdf8";
+      ctx.beginPath();
+      ctx.moveTo(x1, yBDC); ctx.lineTo(x2, yBDC);
+      ctx.stroke();
+      ctx.fillText("ĐCD", x2 + 4, yBDC + 3);
+
+      ctx.restore();
+    }
+
+    /* 11. ĐƯỜNG GIÓNG VÀ NHÃN TÊN 10 BỘ PHẬN */
+    function drawPartCalloutLines(kin) {
+      if (selectedParts.size === 0) return;
+      ctx.save();
+
+      const callouts = {
+        intakePipe:   { x: engineSpecs.cx - 40, y: engineSpecs.cylTopY - 14, label: "Đường ống nạp", tagX: 85, tagY: 30 },
+        exhaustPipe:  { x: engineSpecs.cx + 40, y: engineSpecs.cylTopY - 14, label: "Đường ống thải", tagX: 375, tagY: 30 },
+        intakeValve:  { x: engineSpecs.cx - 28, y: engineSpecs.cylTopY - 8, label: "Xupap nạp", tagX: 110, tagY: 52 },
+        exhaustValve: { x: engineSpecs.cx + 28, y: engineSpecs.cylTopY - 8, label: "Xupap thải", tagX: 375, tagY: 52 },
+        spark:        { x: engineSpecs.cx, y: engineSpecs.cylTopY - 12, label: "Bugi", tagX: 260, tagY: 16 },
+        cylinder:     { x: engineSpecs.cx - engineSpecs.cylW / 2 - 6, y: 135, label: "Xilanh", tagX: 95, tagY: 135 },
+        piston:       { x: engineSpecs.cx + engineSpecs.pistonW / 2 - 8, y: kin.pistonTopY + 22, label: "Pittong", tagX: 380, tagY: kin.pistonTopY + 22 },
+        rod:          { x: (kin.pistonPinX + kin.pinX) / 2, y: (kin.pistonPinY + kin.pinY) / 2, label: "Thanh truyền", tagX: 380, tagY: 235 },
+        crank:        { x: engineSpecs.cx, y: engineSpecs.cy, label: "Trục khuỷu", tagX: 115, tagY: 320 },
+        crankcase:    { x: engineSpecs.cx - 62, y: engineSpecs.cy + 34, label: "Cac-te", tagX: 105, tagY: 360 }
+      };
+
+      selectedParts.forEach(key => {
+        const item = callouts[key];
+        if (!item) return;
+
+        ctx.beginPath();
+        ctx.arc(item.x, item.y, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = "#f59e0b";
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(item.x, item.y);
+        ctx.lineTo(item.tagX, item.tagY);
+        ctx.strokeStyle = "#fcd34d";
+        ctx.lineWidth = 1.6;
+        ctx.setLineDash([3, 3]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.font = "bold 9.5px sans-serif";
+        const txtW = ctx.measureText(item.label).width;
+        const pad = 6;
+
+        ctx.fillStyle = "rgba(7, 13, 26, 0.95)";
+        ctx.strokeStyle = "#f59e0b";
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.roundRect(item.tagX - txtW / 2 - pad, item.tagY - 10, txtW + pad * 2, 19, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(item.label, item.tagX, item.tagY);
+      });
+
+      ctx.restore();
+    }
+
+    // ================= VÒNG LẶP CHÍNH (ANIMATION LOOP 60FPS) =================
+    function engineAnimationLoop() {
+      globalFrameCounter++;
+
+      if (!isAnimationPaused) {
+        const data = LESSON_DATA[currentStrokeIdx];
+        const step = 0.025 * engineSpeed;
+        currentTheta += step;
+
+        if (currentTheta >= data.endRad) {
+          currentTheta = data.startRad; // Tuần hoàn trong phạm vi 180 độ của kì đó
+        }
+      }
+
+      drawEngineSimulation();
+      requestAnimationFrame(engineAnimationLoop);
+    }
+
+    // Khởi tạo trạng thái khi trang load
+    window.onload = function() {
+      applyLockStatusUI();
+      switchStroke(0);
+      engineAnimationLoop();
+    };
+  </script>
+
+</body></html>
